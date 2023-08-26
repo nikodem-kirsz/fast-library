@@ -12,8 +12,10 @@ async def initialize():
     global connection
 
     log.debug("Initializing database...")
-
-    connection = await aiosqlite.connect(f"{os.getcwd()}/app.db")
+    if not os.path.exists(f"{os.getcwd()}/db"):
+        os.mkdir(f"{os.getcwd()}/db")
+    connection = await aiosqlite.connect(f"{os.getcwd()}/db/app.db")
+    log.debug(f"Database sqlite initialized in {os.getcwd()}/db/app.db")
 
     await connection.executescript(
         """
@@ -42,5 +44,6 @@ async def initialize():
         );
         """
     )
+    await connection.commit()
 
     log.debug("Database ready.")

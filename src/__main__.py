@@ -1,6 +1,7 @@
 import logging
 
 import asyncio
+from os import getenv
 from fastapi import FastAPI
 from uvicorn import Config, Server
 
@@ -9,6 +10,8 @@ from . import books
 from . import borrows
 from . import db
 from . import readers
+
+log = logging.getLogger(__name__)
 
 app = FastAPI()
 
@@ -25,12 +28,21 @@ async def root():
 
 @app.on_event("shutdown")
 async def app_shutdown():
+    if getenv('APP_ENV') == 'APP':
+        log.debug("Commiting database commands.") 
+        await db.connection.commit()
+    elif getenv('APP_ENV') == 'TEST':
+        log.debug("Test environment. Discarding database commands.")   
+    log.debug("Closing database connection.")
     await db.connection.close()
+    log.debug("Stopping asyncio event loop.") 
     asyncio.get_event_loop().stop()
 
 
 def setup_logging():
     log = logging.getLogger("app")
+    if getenv("LOG_LEVEL") == 'DEBUG':
+        logging.basicConfig(level=logging.DEBUG)
     log.setLevel(logging.DEBUG)
     logging_handler = logging.StreamHandler()
     logging_handler.setLevel(logging.DEBUG)

@@ -5,16 +5,7 @@ RUN pip3 install -r /app/requirements.txt
 
 COPY src/ /app/
 
+ENV APP_ENV APP
+ENV LOG_LEVEL NONE
+
 ENTRYPOINT python -m app
-
-
-FROM app AS test
-
-COPY test-requirements.txt /test/
-RUN pip install -r /test/test-requirements.txt
-
-COPY test/ /test/
-
-WORKDIR /test
-
-ENTRYPOINT pytest -v

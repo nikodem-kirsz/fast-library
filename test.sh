@@ -1,6 +1,6 @@
 #!/bin/bash -ex
 
-docker build -t app-test --target test .
+docker build -t app-test --target test . -f Dockerfile.test
 
 # create file for logs
 rm -fr logs
