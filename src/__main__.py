@@ -29,13 +29,13 @@ async def root():
 @app.on_event("shutdown")
 async def app_shutdown():
     if getenv('APP_ENV') == 'APP':
-        log.debug("Commiting database commands.") 
+        log.debug("Commiting database commands.")
         await db.connection.commit()
     elif getenv('APP_ENV') == 'TEST':
-        log.debug("Test environment. Discarding database commands.")   
+        log.debug("Test environment. Discarding database commands.")
     log.debug("Closing database connection.")
     await db.connection.close()
-    log.debug("Stopping asyncio event loop.") 
+    log.debug("Stopping asyncio event loop.")
     asyncio.get_event_loop().stop()
 
 

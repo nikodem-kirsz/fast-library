@@ -14,6 +14,7 @@ from . import db
 log = logging.getLogger(__name__)
 router = APIRouter()
 
+
 async def get_borrow_from_db(book_id: int):
     cursor = await db.connection.execute(
         """
@@ -38,6 +39,8 @@ async def get_borrow_from_db(book_id: int):
         (book_id,),
     )
     return await cursor.fetchone()
+
+
 class Borrow(BaseModel):
     reader_id: int
     book_id: int
@@ -55,10 +58,11 @@ async def add_borrow(borrow: Borrow):
     if borrows:
         borrows_id, _, readers_id, _, _, _ = borrows
         if readers_id != borrow.reader_id:
-            raise HTTPException(status_code=403, detail="Book is already borrowed by someone else")
+            raise HTTPException(
+                status_code=403, detail="Book is already borrowed by someone else")
         else:
             return {"borrow_id": borrows_id}
-    
+
     borrow_id = (await db.connection.execute_insert(
         """
         INSERT INTO borrows
@@ -88,19 +92,21 @@ async def del_borrow(book_id: int):
     )
     log.debug(f"Book {book_id} returned.")
 
+
 @router.get("/v1/borrows/{book_id}")
 async def get_borrow(book_id: int):
     row = await get_borrow_from_db(book_id)
     if row:
         borrows_id, readers_name, readers_id, title, author_name, borrow_time = row
         return {
-                "id": borrows_id, 
-                "borrow_time": borrow_time, 
-                "readers_id": readers_id, 
-                "readers_name": readers_name,
-                "title": title, 
-                "author": author_name
+            "id": borrows_id,
+            "borrow_time": borrow_time,
+            "readers_id": readers_id,
+            "readers_name": readers_name,
+            "title": title,
+            "author": author_name
         }
+
 
 @router.get("/v1/borrows")
 async def get_borrows():

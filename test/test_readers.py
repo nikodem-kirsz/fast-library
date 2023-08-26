@@ -2,9 +2,11 @@ import requests
 
 from helpers import create_reader
 
+
 def test_add_readers(app):
     assert create_reader("Nikodem") == 1
     assert create_reader("Marta") == 2
+
 
 def test_get_readers(app):
     create_reader("Nikodem")
@@ -18,6 +20,7 @@ def test_get_readers(app):
             {"id": 2, "name": "Marta"}
         ]
     }
+
 
 def test_get_reader(app):
     reader_id = create_reader("Nikodem")

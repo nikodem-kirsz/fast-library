@@ -10,6 +10,7 @@ from . import db
 log = logging.getLogger(__name__)
 router = APIRouter()
 
+
 async def get_book_from_db(book_id: int):
     query = """
         SELECT
@@ -25,6 +26,7 @@ async def get_book_from_db(book_id: int):
     """
     cursor = await db.connection.execute(query, (book_id,))
     return await cursor.fetchone()
+
 
 class Book(BaseModel):
     author_id: int
@@ -49,6 +51,7 @@ async def add_book(book: Book):
 
     return {"book_id": book_id}
 
+
 @router.get("/v1/books/{book_id}")
 async def get_book(book_id: int):
     row = await get_book_from_db(book_id)
@@ -57,7 +60,8 @@ async def get_book(book_id: int):
         return {"id": book_id, "title": title, "author": author_name}
     else:
         raise HTTPException(status_code=404, detail="Book not found")
-    
+
+
 @router.get("/v1/books")
 async def get_books():
     async with db.connection.execute(
